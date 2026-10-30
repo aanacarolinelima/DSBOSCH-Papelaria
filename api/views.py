@@ -36,6 +36,18 @@ def listar_produtos(request):
        else:
            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['GET','PATCH'])
+@api_view(['GET','PATCH', 'DELETE'])
 def detalhe_produto(request, pk):
-     
+    if request.method == 'GET':
+           queryset = Produto.objects.all().order_by("nome")
+           serializers = ProdutoSerializer(queryset, many = True)
+           return Response(serializers.data)
+    elif request.method == 'POST':
+           serializers = ProdutoSerializer(data=request.data)
+           if serializers.is_valid():
+                serializers.save()
+                return Response(serializers.data, status=status.HTTP_201_CREATED)
+           else:
+               return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
